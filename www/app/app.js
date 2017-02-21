@@ -1,4 +1,4 @@
-angular.module("eliteApp", ["ionic", "angular-cache"])
+angular.module("eliteApp", ["ionic", "angular-cache", "nemLogging", "uiGmapgoogle-maps"])
 
   .run(function($ionicPlatform, CacheFactory) {
     $ionicPlatform.ready(function() {
@@ -94,6 +94,15 @@ angular.module("eliteApp", ["ionic", "angular-cache"])
         views: {
           'mainContent': {
             templateUrl: "app/locations/locations.html"
+          }
+        }
+      })
+
+      .state('app.location-map', {
+        url: "/location-map/:id",
+        views: {
+          'mainContent': {
+            templateUrl: "app/locations/location-map.html"
           }
         }
       })

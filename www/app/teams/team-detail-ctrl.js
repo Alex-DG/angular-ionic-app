@@ -4,9 +4,9 @@
 (function () {
   'use strict';
 
-  angular.module('eliteApp').controller('TeamDetailCtrl', ['$stateParams', '$ionicPopup', 'eliteApi', TeamDetailCtrl]);
+  angular.module('eliteApp').controller('TeamDetailCtrl', ['$stateParams', '$ionicPopup', 'eliteApi', 'myTeamsService', TeamDetailCtrl]);
 
-  function TeamDetailCtrl($stateParams, $ionicPopup, eliteApi) {
+  function TeamDetailCtrl($stateParams, $ionicPopup, eliteApi, myTeamsService) {
     var vm = this,
       team = null,
       leagueData = null;
@@ -14,16 +14,11 @@
     console.log("$stateParams", $stateParams);
     vm.teamId = Number($stateParams.id);
 
-    eliteApi.getLeagueData().then(function (data) {
-
+    eliteApi.getLeagueData().then(function(data){
       team = _.chain(data.teams)
         .map("divisionTeams").flatten()
         .find({"id": vm.teamId})
         .value();
-      // team = _.chain(data.teams)
-      //   .flatten("divisionTeams")
-      //   .find({"id": vm.teamId})
-      //   .value();
 
       vm.teamName = team.name;
 
@@ -45,10 +40,6 @@
         })
         .value();
 
-      // vm.teamStanding = _.chain(data.standings)
-      //   .flatten("divisionStandings")
-      //   .find({"teamId": vm.teamId})
-      //   .value();
       vm.teamStanding = _.chain(data.standings)
         .map("divisionStandings").flatten()
         .find({"teamId": vm.teamId})
@@ -61,27 +52,27 @@
     //vm.following = false;
     vm.following = myTeamsService.isFollowingTeam(vm.teamId.toString());
 
-    vm.toggleFollow = function () {
+    vm.toggleFollow = function(){
 
       if (vm.following) {
         var confirmPopup = $ionicPopup.confirm({
           title: 'Unfollow?',
           template: 'Are you sure you want to unfollow?'
         });
-        confirmPopup.then(function (res) {
-          if (res) {
+        confirmPopup.then(function(res) {
+          if(res) {
             vm.following = !vm.following;
             myTeamsService.unfollowTeam(team.id);
           }
         });
-      } else {
+      } else{
         vm.following = !vm.following;
-        myTeamsService.followTeam({id: team.id, name: team.name, leagueId: leagueData.id, leagueName: leagueData.name});
+        myTeamsService.followTeam({ id: team.id, name: team.name, leagueId: leagueData.id, leagueName: leagueData.name });
       }
     };
 
 
-    function isTeamInGame(item) {
+    function isTeamInGame(item){
       return item.team1Id === vm.teamId || item.team2Id === vm.teamId;
     }
 

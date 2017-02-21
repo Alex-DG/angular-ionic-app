@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
   angular.module('eliteApp').factory('eliteApi', ['$http', '$q', '$ionicLoading', 'CacheFactory', eliteApi]);
@@ -36,11 +36,11 @@
 
     self.staticCache = CacheFactory.get("staticCache");
 
-    function setLeagueId(leagueId) {
+    function setLeagueId(leagueId){
       self.staticCache.put("currentLeagueId", leagueId);
     }
 
-    function getLeagueId() {
+    function getLeagueId(){
       var id = self.staticCache.get("currentLeagueId");
       console.log("in get leagueid", id);
       return id;
@@ -56,12 +56,12 @@
         deferred.resolve(leaguesData);
       } else {
         $http.get("http://elite-schedule.net/api/leaguedata")
-          .success(function (data) {
+          .success(function(data) {
             console.log("Received data via HTTP");
             self.leaguesCache.put(cacheKey, data);
             deferred.resolve(data);
           })
-          .error(function () {
+          .error(function() {
             console.log("Error while making HTTP call.");
             deferred.reject();
           });
@@ -70,9 +70,7 @@
     }
 
     function getLeagueData(forceRefresh) {
-      if (typeof forceRefresh === "undefined") {
-        forceRefresh = false;
-      }
+      if (typeof forceRefresh === "undefined") { forceRefresh = false; }
 
       var deferred = $q.defer(),
         cacheKey = "leagueData-" + getLeagueId(),
@@ -80,8 +78,7 @@
 
       if (!forceRefresh) {
         leagueData = self.leagueDataCache.get(cacheKey);
-      }
-      ;
+      };
 
       if (leagueData) {
         console.log("Found data in cache", leagueData);
@@ -92,13 +89,13 @@
         });
 
         $http.get("http://elite-schedule.net/api/leaguedata/" + getLeagueId())
-          .success(function (data, status) {
+          .success(function(data, status) {
             console.log("Received schedule data via HTTP.", data, status);
             self.leagueDataCache.put(cacheKey, data);
             $ionicLoading.hide();
             deferred.resolve(data);
           })
-          .error(function () {
+          .error(function() {
             console.log("Error while making HTTP call.");
             $ionicLoading.hide();
             deferred.reject();
@@ -106,6 +103,7 @@
       }
       return deferred.promise;
     };
+
 
 
     return {
